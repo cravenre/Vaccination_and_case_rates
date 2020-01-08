@@ -4,6 +4,7 @@ library(tidyverse)
 library(DT)
 library(plotly)
 library(ggplot2)
+library(shinythemes)
 
 state_merged <- readRDS("data/state_merged.rds")
 
@@ -14,5 +15,5 @@ state_list <- sort(unique(state_merged$state))
 
 global_merged <- readRDS("data/global_merged.rds")
 
-global_year <- unique(global_merged$year)
-global_list <- sort(unique(global_merged$country))
+global_year <- sort(unique(global_merged$year))
+global_list <- sort(unique(global_merged$country_name))

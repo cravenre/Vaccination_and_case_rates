@@ -3,6 +3,7 @@ library(ggplot2)
 library(readxl)
 library(rio)
 library(plotly)
+library(countrycode)
 
 #Importing state vaccination data for analysis
 state_vax_mmr <- read_csv("data/state_vax_data.csv", skip=2)
@@ -128,13 +129,61 @@ colnames(global_measlescases) <- c("iso3", "country", "year", "case_total")
 global_measlesvax <- global_measlesvax %>%
   pivot_longer(cols=-c(1:3),names_to="year", values_to="vax_rate", values_drop_na=TRUE)
 
-# Join the global vax and case data
+#Importing the global health expenditure data, brought in as per capita in $US
+global_expenses <- import_list("data/WHO_health_expenditures.xlsx", setclass="tbl", rbind=TRUE)
+global_expenses <- global_expenses[-1, -c(2,3)]
+
+#Converting the expense columns to numeric
+global_expenses[,2:19] <- sapply(global_expenses[,2:19], as.numeric)
+
+#Find all global_expense country names not in the merged dataframe, then rename them
+rename_countries <- global_expenses$Countries[!global_expenses$Countries %in% global_list]
+
+global_expenses <- global_expenses %>% 
+  mutate(Countries=str_replace(Countries, "United States of America", "United States")) %>% 
+  mutate(Countries=str_replace(Countries, "Brunei Darussalam", "Brunei")) %>% 
+  mutate(Countries=str_replace(Countries, "Republic of Korea", "South Korea")) %>% 
+  mutate(Countries=str_replace(Countries, "Saint Kitts and Nevis", "St. Kitts & Nevis")) %>% 
+  mutate(Countries=str_replace(Countries, "Antigua and Barbuda", "Antigua & Barbuda")) %>% 
+  mutate(Countries=str_replace(Countries, "Venezuela \\(Bolivarian Republic of\\)", "Venezuela")) %>% 
+  mutate(Countries=str_replace(Countries, "Czech Republic", "Czechia")) %>% 
+  mutate(Countries=str_replace(Countries, "Saint Lucia", "St. Lucia")) %>% 
+  mutate(Countries=str_replace(Countries, "Trinidad and Tobago", "Trinidad & Tobago")) %>% 
+  mutate(Countries=str_replace(Countries, "The Republic of North Macedonia", "Macedonia")) %>% 
+  mutate(Countries=str_replace(Countries, "Saint Vincent and the Grenadines", "St. Vincent & Grenadines")) %>% 
+  mutate(Countries=str_replace(Countries, "Bosnia and Herzegovina", "Bosnia & Herzegovina")) %>% 
+  mutate(Countries=str_replace(Countries, "Russian Federation", "Russia")) %>% 
+  mutate(Countries=str_replace(Countries, "Eswatini", "Swaziland")) %>% 
+  mutate(Countries=str_replace(Countries, "Cabo Verde Republic of", "Cape Verde")) %>% 
+  mutate(Countries=str_replace(Countries, "Sao Tome and Principe", "São Tomé & Príncipe")) %>% 
+  mutate(Countries=str_replace(Countries, "Bolivia Plurinational States of", "Bolivia")) %>% 
+  mutate(Countries=str_replace(Countries, "Côte d'Ivoire", "Côte d’Ivoire")) %>% 
+  mutate(Countries=str_replace(Countries, "Republic of Moldova", "Moldova")) %>% 
+  mutate(Countries=str_replace(Countries, "Democratic Republic of the Congo", "Congo - Kinshasa")) %>% 
+  mutate(Countries=str_replace(Countries, "Viet Nam", "Vietnam")) %>% 
+  mutate(Countries=str_replace(Countries, "Congo$",  "Congo - Brazzaville")) %>% 
+  mutate(Countries=str_replace(Countries, "Lao People's Democratic Republic", "Laos")) %>% 
+  mutate(Countries=str_replace(Countries, "United Republic of Tanzania", "Tanzania")) %>% 
+  mutate(Countries=str_replace(Countries, "Myanmar", "Myanmar (Burma)"))
+
+# Pivot the global health expenses longer for merging with global data
+global_expenses <- global_expenses %>% 
+  pivot_longer(cols=-c(1),names_to="year", values_to="expenses_percapita", values_drop_na=TRUE)
+
+# Join the global vax, case data, and global expenses
 global_merged <- global_measlescases %>% 
   full_join(global_measlesvax, by=c("iso3", "country", "year"))
 
+# Converting all country names to the same standard
+global_merged$country_name <- countrycode(global_merged$iso3, "iso3c", "country.name")
+
+global_merged <- global_merged[, -2]
+
+global_merged <- global_merged %>% 
+  full_join(global_expenses, by=c("country_name" = "Countries", "year"))
+
 # Exporting as an RDS file for shiny app
 saveRDS(global_merged, file="data/global_merged.rds")
-
 
 # Graph of global vax rates for app testing
 g2 <- list(
