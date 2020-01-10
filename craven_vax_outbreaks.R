@@ -84,14 +84,34 @@ state_measles <- state_measles %>%
   gather(key=year, value=measles_cases, -state) %>% 
   na.omit()
 
+# Importing the US health expenditure data and cleaning for merge
+state_expenses <- import_list("data/US_health_expenditures.xlsx", setclass="tbl",
+                              which="Table 11 Personal Health Care", rbind=TRUE)
+
+state_expenses <- state_expenses[,-26]
+
+names(state_expenses) <- unlist((state_expenses[1,]))
+
+state_expenses <- state_expenses[-c(1:3,10,17,23,31,44,49,55,62),]
+
+# Pivot the state expenses data for merge
+state_expenses <- state_expenses %>% 
+  pivot_longer(cols=-c(1),names_to="year", values_to="expenses_percapita", values_drop_na=TRUE)
+
+colnames(state_expenses)[1] <- "state"
+
 #Now merge the state measles cases and state vax dataframes
 state_merged <- state_vax_mmr %>% 
   full_join(state_measles, by=c("state", "year"))
 
 state_merged$measles_cases <- as.numeric(state_merged$measles_cases)
 
+state_merged <- state_merged %>%
+  full_join(state_expenses, by=c("state", "year"))
+
 # Importing state and map to overlay onto
 names(state.abb) <- state.name
+
 state_merged$abbrev <- state.abb[state_merged$state]
 
 # state_merged data prep for shiny app
@@ -103,11 +123,17 @@ global_vax <- import_list("data/2018vax_who.xlsx", setclass="tbl", rbind=TRUE)
 global_vax <- global_vax %>% 
   drop_na(country)
 
-# Selecting down to vax rates for measles only
-global_measlesvax <- global_vax %>% 
+# Selecting down to vax rates for 1 measles dose only
+global_measlesvax1 <- global_vax %>% 
+  filter(vaccine == "MCV1")
+
+global_measlesvax1 <- global_measlesvax1[, -c(1,4,24:47)]
+
+# Selecting down to vax rates for 2 measles doses only
+global_measlesvax2 <- global_vax %>% 
   filter(vaccine == "MCV2")
 
-global_measlesvax <- global_measlesvax[,-c(1,24:47)]
+global_measlesvax2 <- global_measlesvax2[,-c(1,4,24:47)]
 
 # Importing the global measles case data
 global_measlescases <- import_list("data/measlescasesbycountrybymonth.xls",
@@ -126,8 +152,13 @@ global_measlescases <- global_measlescases[,-c(4:15)]
 colnames(global_measlescases) <- c("iso3", "country", "year", "case_total")
 
 # Pivot the global vax data so that it can be merged easily with case data
-global_measlesvax <- global_measlesvax %>%
-  pivot_longer(cols=-c(1:3),names_to="year", values_to="vax_rate", values_drop_na=TRUE)
+global_measlesvax2 <- global_measlesvax2 %>%
+  pivot_longer(cols=-c(1:2),names_to="year", values_to="MCV2_rate", values_drop_na=TRUE)
+
+global_measelesvax1[,3:21] <- sapply(global_measelesvax1[,3:21], as.numeric)
+
+global_measlesvax1 <- global_measlesvax1 %>% 
+  pivot_longer(cols=-c(1:2),names_to="year", values_to="MCV1_rate", values_drop_na=TRUE)
 
 #Importing the global health expenditure data, brought in as per capita in $US
 global_expenses <- import_list("data/WHO_health_expenditures.xlsx", setclass="tbl", rbind=TRUE)
@@ -172,7 +203,8 @@ global_expenses <- global_expenses %>%
 
 # Join the global vax, case data, and global expenses
 global_merged <- global_measlescases %>% 
-  full_join(global_measlesvax, by=c("iso3", "country", "year"))
+  full_join(global_measlesvax2, by=c("iso3", "country", "year")) %>% 
+  full_join(global_measlesvax1, by=c("iso3", "country", "year"))
 
 # Converting all country names to the same standard
 global_merged$country_name <- countrycode(global_merged$iso3, "iso3c", "country.name")
@@ -198,3 +230,5 @@ plot_geo(maptest_global) %>%
   layout(
     title = "Global Case Rate",
     geo =g2)
+
+cor(x=state_merged$vax_rate, y=state_merged$expenses_percapita, use="pairwise.complete.obs")

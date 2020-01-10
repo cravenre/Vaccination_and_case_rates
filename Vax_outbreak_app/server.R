@@ -16,10 +16,17 @@ shinyServer(
                 geom_point()
         })
         
+        output$state_plot <- renderPlot({
+            state_merged %>% 
+                filter(state == input$State) %>% 
+                ggplot(aes_string(x=input$statexvar, y=input$stateyvar)) +
+                geom_point()
+        })
+        
         output$global_vaxrate <- renderPlot({
             global_merged %>% 
                 filter(country_name == input$Country) %>% 
-                ggplot(aes(x=year, y=vax_rate)) +
+                ggplot(aes(x=year, y=MCV2_rate)) +
                 geom_point()
         })
         
@@ -42,7 +49,8 @@ shinyServer(
             )
             
             plot_geo(state_mapdata, locationmode='USA-states') %>%
-                add_trace(z=~vax_rate, locations = ~abbrev, color= ~vax_rate, colors='RdBu') %>%
+                add_trace(z=~get(input$statemap_vars), locations = ~abbrev,
+                          color= ~get(input$statemap_vars), colors='YlGnBu') %>%
                 layout(
                     title = "MMR Vaccination Rates",
                     geo =g1)
@@ -57,7 +65,7 @@ shinyServer(
             )
             
             plot_geo(global_mapdata) %>%
-                add_trace(z=~vax_rate, locations = ~iso3, color = ~vax_rate, colors='RdBu') %>%
+                add_trace(z=~MCV2_rate, locations = ~iso3, color = ~MCV2_rate, colors='YlGnBu') %>%
                 layout(
                     title = "Global Vaccination Rate",
                     geo =g2)
