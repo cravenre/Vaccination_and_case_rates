@@ -114,6 +114,11 @@ names(state.abb) <- state.name
 
 state_merged$abbrev <- state.abb[state_merged$state]
 
+# Adding a hover column for mapping ease
+state_merged$hover <- with(state_merged, paste(state, "<br>", "Vax rate:", vax_rate,
+                                               "<br>", "Cases:", measles_cases, "<br>",
+                                               "Expenditures: $", expenses_percapita))
+
 # state_merged data prep for shiny app
 saveRDS(state_merged, file="data/state_merged.rds")
 
@@ -165,7 +170,8 @@ global_expenses <- import_list("data/WHO_health_expenditures.xlsx", setclass="tb
 global_expenses <- global_expenses[-1, -c(2,3)]
 
 #Converting the expense columns to numeric
-global_expenses[,2:19] <- sapply(global_expenses[,2:19], as.numeric)
+global_expenses[,2:19] <- sapply(global_expenses[,2:19], as.numeric) %>% 
+  round()
 
 #Find all global_expense country names not in the merged dataframe, then rename them
 rename_countries <- global_expenses$Countries[!global_expenses$Countries %in% global_list]
@@ -214,21 +220,28 @@ global_merged <- global_merged[, -2]
 global_merged <- global_merged %>% 
   full_join(global_expenses, by=c("country_name" = "Countries", "year"))
 
+# Adding a hover column for ease in mapping
+global_merged$hover <- with(global_merged, paste(country_name, "<br>", "1st dose:",MCV1_rate,
+                                                 "<br>", "2nd dose",MCV2_rate, "<br>",
+                                                 "Cases:", case_total, "<br>",
+                                                 "Expenditures: $", expenses_percapita))
+
 # Exporting as an RDS file for shiny app
 saveRDS(global_merged, file="data/global_merged.rds")
 
-# Graph of global vax rates for app testing
-g2 <- list(
-  projection = list(type = 'Mercator')
-  )
+# Exploratory graphs for presentation
+ggplot(state_merged, aes(x=vax_rate))+
+  geom_histogram()
 
-maptest_global <- global_merged %>% 
-  filter(year == 2019)
+ggplot(global_merged, aes(x=MCV2_rate)) +
+  geom_histogram()
 
-plot_geo(maptest_global) %>%
-  add_trace(z=~case_total, locations = ~iso3, color = ~case_total, colors='Greens') %>%
-  layout(
-    title = "Global Case Rate",
-    geo =g2)
+summary(global_merged)
 
-cor(x=state_merged$vax_rate, y=state_merged$expenses_percapita, use="pairwise.complete.obs")
+summary(state_merged)
+
+ggplot(state_merged, aes(x=year, y=measles_cases))+
+  geom_point()
+
+ggplot(global_merged, aes(x=year, y=case_total))+
+  geom_boxplot()
