@@ -289,6 +289,8 @@ global_merged$hover <- with(global_merged, paste(country_name, "<br>", "1st dose
 # Exporting as an RDS file for shiny app
 saveRDS(global_merged, file="data/global_merged.rds")
 
+
+
 # Exploratory graphs for presentation
 ggplot(state_merged, aes(x=vax_rate))+
   geom_histogram()
@@ -296,7 +298,12 @@ ggplot(state_merged, aes(x=vax_rate))+
 state_merged %>% 
   drop_na(measles_cases) %>% 
   ggplot(aes(x=year, y=measles_cases))+
-  geom_boxplot()
+  geom_boxplot()+
+  labs(x="Year", y="Total Cases")+
+  theme(axis.title.x=element_text(size=18),
+        axis.title.y=element_text(size=18),
+        axis.text.x=element_text(vjust=0.5,size=12),
+        axis.text.y=element_text(size=15))
 
 ggplot(global_merged, aes(x=MCV2_rate)) +
   geom_histogram()
@@ -304,23 +311,55 @@ ggplot(global_merged, aes(x=MCV2_rate)) +
 ggplot(state_merged, aes(x=expenses_percapita))+
   geom_histogram()
 
-ggplot(state_merged, aes(x=year, y=expenses_percapita, fill=year))+
-  geom_boxplot()
+state_merged %>% 
+  drop_na(expenses_percapita) %>% 
+  ggplot(aes(x=year, y=expenses_percapita, fill=year))+
+  geom_boxplot() +
+  labs(x="Year", y="Expenses per capita ($)")+
+  theme(axis.title.x=element_text(size=15),
+        axis.title.y=element_text(size=15),
+        axis.text.x=element_text(angle=90,vjust=0.5,size=12),
+        axis.text.y=element_text(size=12),
+        plot.title=element_text(size=18),
+        legend.position = "none")+
+  ggtitle("US Healthcare Expenditures by Year")
 
 state_merged %>%
   drop_na(vax_rate) %>% 
   ggplot(aes(x=year, y=vax_rate, fill=year))+
-  geom_boxplot()
+  geom_boxplot()+
+  labs(x="Year", y="Vaccination Rate")+
+  theme(axis.title.x=element_text(size=18),
+        axis.title.y=element_text(size=18),
+        axis.text.x=element_text(vjust=0.5,size=12),
+        axis.text.y=element_text(size=15),
+        legend.position = "none")
 
 state_merged %>% top_n(n=-5, wt=vax_rate)
 
 state_merged %>% top_n(n=5, wt=measles_cases)
 
-ggplot(global_merged, aes(x=year, y=MCV2_rate, fill=year))+
-  geom_boxplot()
+global_merged %>% 
+  drop_na(MCV2_rate) %>% 
+  ggplot(aes(x=year, y=MCV2_rate, fill=year))+
+  geom_boxplot()+
+  labs(x="Year", y="Vaccination Rate (2nd dose)")+
+  theme(axis.title.x=element_text(size=18),
+        axis.title.y=element_text(size=18),
+        axis.text.x=element_text(angle=90,vjust=0.5,size=12),
+        axis.text.y=element_text(size=15),
+        legend.position = "none")
 
-ggplot(global_merged, aes(x=year, y=MCV1_rate, fill=year))+
-  geom_boxplot()
+global_merged %>% 
+  drop_na(MCV1_rate) %>% 
+  ggplot(aes(x=year, y=MCV1_rate, fill=year))+
+  geom_boxplot()+
+  labs(x="Year", y="Vaccination Rate (1st dose)")+
+  theme(axis.title.x=element_text(size=18),
+        axis.title.y=element_text(size=18),
+        axis.text.x=element_text(angle=90,vjust=0.5,size=12),
+        axis.text.y=element_text(size=15),
+        legend.position = "none")
 
 ggplot(global_merged, aes(x=expenses_percapita, y=MCV1_rate))+
   geom_point()+
@@ -356,22 +395,73 @@ global_topfivecases <- global_merged %>%
   top_n(n=5, wt=case_total)
 
 ggplot(global_topfivecases, aes(x=year, y=case_total))+
-  geom_point()
+  geom_point()+
+  labs(x="Year", y="Total Cases")+
+  theme(axis.text.x=element_text(size=12),
+        axis.text.y=element_text(size=12),
+        axis.title.y=element_text(size=15),
+        axis.title.x=element_text(size=15))
 
 global_bottomfiveMCV1 <- global_merged %>% 
   group_by(year) %>% 
   top_n(n=-5, wt=MCV1_rate)
 
-ggplot(global_bottomfiveMCV1, aes(x=year, y=MCV1_rate))+
-  geom_point()
+global_topMCV1 <- global_merged %>% 
+  group_by(year) %>% 
+  top_n(n=1, wt=MCV1_rate)
+
+#Creating a new column to label and then merge the top and bottom MCV1 rated countries
+global_bottomfiveMCV1$high_low <- "bottom"
+global_topMCV1$high_low <- "top"
+
+merged_topbottomMCV1 <- rbind(global_bottomfiveMCV1, global_topMCV1)
+
+ggplot(merged_topbottomMCV1, aes(x=high_low, y=expenses_percapita, fill=high_low))+
+  geom_boxplot() +
+  labs(x="Single Dose Vaccination Group", y="Expenses per capita ($)")+
+  scale_x_discrete(labels=c("Bottom Countries", "Top Countries")) +
+  theme(axis.title.x=element_text(size=18),
+        axis.title.y=element_text(size=18),
+        axis.text.x=element_text(size=15),
+        axis.text.y=element_text(size=15),
+        legend.position = "none")
 
 ggplot(global_bottomfiveMCV1, aes(x=reorder(country_name,country_name,
                                              function(x)-length(x))))+
-  geom_bar()+
-  theme(axis.text.x=element_text(angle=90))
+  geom_bar(fill="midnightblue")+
+  labs(y="Bottom Five Occurrences")+
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 15))+
+  theme(axis.text.x=element_text(angle=90,hjust=0.95,vjust=0.5, size=10),
+        axis.text.y=element_text(size=15),
+        axis.title.y=element_text(size=15),
+        axis.title.x=element_blank())
+
+ggplot(global_topMCV1, aes(x=reorder(country_name,country_name,
+                                            function(x)-length(x))))+
+  geom_bar(fill="midnightblue")+
+  labs(y="Top Five Occurrences")+
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 15))+
+  theme(axis.text.x=element_text(angle=90,hjust=0.95,vjust=0.5, size=10),
+        axis.text.y=element_text(size=15),
+        axis.title.y=element_text(size=15),
+        axis.title.x=element_blank())
+
+ggplot(global_bottomfiveMCV1, aes(y=expenses_percapita)) +
+  geom_boxplot()
+
+ggplot(global_topMCV1, aes(y=expenses_percapita)) +
+  geom_boxplot()
+
+summary(global_bottomfiveMCV1$expenses_percapita)
+
+summary(global_topMCV1$expenses_percapita)
 
 ggplot(global_topfivecases, aes(x=reorder(country_name, country_name,
                                           function(x)-length(x))))+
-  geom_bar()+
-  theme(axis.text.x=element_text(angle=90))
+  geom_bar(fill="midnightblue")+
+  labs(y="Top Five Occurrences") +
+  theme(axis.text.x=element_text(angle=90,hjust=0.95,vjust=0.5,size=15),
+        axis.text.y=element_text(size=15),
+        axis.title.y=element_text(size=15),
+        axis.title.x=element_blank())
   
