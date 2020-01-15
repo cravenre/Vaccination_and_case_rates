@@ -1,0 +1,70 @@
+Area,Lyme disease,Lyme disease,Lyme disease,Malaria,Measles,Measles,Measles
+Area,Total,Confirmed,Probable,Malaria,Total,Indigenous,Imported
+United States,33461,25359,8102,1653,667,604,63
+New England,11292,8168,3124,120,13,6,7
+Connecticut,2360,1719,641,15,5,4,1
+Maine,1401,1169,232,7,—,—,—
+Massachusetts,5304,3646,1658,61,8,2,6
+New Hampshire,724,622,102,11,—,—,—
+Rhode Island,904,570,334,22,—,—,—
+Vermont,599,442,157,4,—,—,—
+Mid. Atlantic,14509,11912,2597,427,38,30,8
+New Jersey,3286,2589,697,79,3,1,2
+New York (upstate),2887,2285,602,59,5,2,3
+New York City,849,568,281,204,27,25,2
+Pennsylvania,7487,6470,1017,85,3,2,1
+E.N. Central,1950,1511,439,141,392,384,8
+Illinois,233,233,—,55,2,1,1
+Indiana,110,100,10,20,1,—,1
+Michigan,127,93,34,17,5,3,2
+Ohio,119,94,25,38,382,379,3
+Wisconsin,1361,991,370,11,2,1,1
+W.N. Central,1663,1035,628,115,52,48,4
+Iowa,194,110,84,17,—,—,—
+Kansas,20,12,8,9,14,13,1
+Minnesota,1416,896,520,51,2,1,1
+Missouri,10,7,3,15,27,25,2
+Nebraska,7,6,1,9,1,1,—
+North Dakota,14,2,12,9,—,—,—
+South Dakota,2,2,—,5,8,8,—
+S. Atlantic,3678,2557,1121,421,3,1,2
+Delaware,417,341,76,2,—,—,—
+District of Columbia,40,35,5,18,—,—,—
+Florida,155,85,70,52,—,—,—
+Georgia,4,4,—,82,—,—,—
+Maryland,1373,957,416,146,—,—,—
+North Carolina,170,27,143,36,1,—,1
+South Carolina,37,20,17,6,—,—,—
+Virginia,1346,976,370,77,2,1,1
+West Virginia,136,112,24,2,—,—,—
+E.S. Central,127,48,79,46,5,3,2
+Alabama,64,28,36,14,1,—,1
+Kentucky,44,11,33,11,—,—,—
+Mississippi,2,2,—,1,—,—,—
+Tennessee,17,7,10,20,4,3,1
+W.S. Central,42,20,22,143,10,7,3
+Arkansas,—,—,—,7,—,—,—
+Louisiana,2,—,2,20,—,—,—
+Oklahoma,—,—,—,10,—,—,—
+Texas,40,20,20,106,10,7,3
+Mountain,59,38,21,79,8,6,2
+Arizona,21,14,7,25,3,3,—
+Colorado,—,—,—,30,1,—,1
+Idaho,9,8,1,3,—,—,—
+Montana,7,5,2,2,—,—,—
+Nevada,6,4,2,11,—,—,—
+New Mexico,—,—,—,3,1,1,—
+Utah,13,5,8,5,3,2,1
+Wyoming,3,2,1,—,—,—,—
+Pacific,141,70,71,161,146,119,27
+Alaska,8,5,3,4,—,—,—
+California,73,54,19,95,92,75,17
+Hawaii,N,N,N,4,15,10,5
+Oregon,45,3,42,17,6,5,1
+Washington,15,8,7,41,33,29,4
+Territories,Territories,Territories,Territories,Territories,Territories,Territories,Territories
+American Samoa,N,N,N,—,—,—,—
+C.N.M.I.,—,—,—,—,—,—,—
+Guam,—,—,—,—,2,2,—
+Puerto Rico,N,N,N,1,2,2,—
+U.S. Virgin Islands,N,N,N,—,—,—,—

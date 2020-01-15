@@ -63,21 +63,81 @@ state_measles_2016 <- state_measles_2016[-c(1,2,9,14,20,28,38,43,48,57,63:130),c
 
 colnames(state_measles_2016) <- c("state", "2016")
 
+#Importing 2015 measles cases
+state_measles_2015 <- read_csv("data/statemeasles_2015.csv")
+
+state_measles_2015 <- state_measles_2015[-c(1:3,10,15,21,29,39,44,49,58,64:69),c(1,3)]
+
+colnames(state_measles_2015) <- c("state", "2015")
+
+#Importing 2014 measles cases
+state_measles_2014 <- read_csv("data/statemeasles_2014.csv")
+
+state_measles_2014 <- state_measles_2014[-c(1:3,10,15,21,29,39,44,49,58,64:69),c(1,6)]
+
+colnames(state_measles_2014) <- c("state", "2014")
+
+#Importing 2013 measles cases
+state_measles_2013 <- read_csv("data/statemeasles_2013.csv")
+
+state_measles_2013 <- state_measles_2013[-c(1:5,12,17,23,31,41,46,51,60,66:72),c(1,2)]
+
+colnames(state_measles_2013) <- c("state", "2013")
+
+#Importing the 2012 measles cases
+state_measles_2012 <- read_csv("data/statemeasles_2012.csv")
+
+state_measles_2012 <- state_measles_2012[-c(1:5,12,17,23,31,41,46,51,60,66:72),c(1,2)]
+
+colnames(state_measles_2012) <- c("state", "2012")
+
+#Importing the 2011 measles cases
+state_measles_2011 <- read_csv("data/statemeasles_2011.csv")
+
+state_measles_2011 <- state_measles_2011[-c(1:5,12,17,23,31,41,46,51,60,66:72),c(1,6)]
+
+colnames(state_measles_2011) <- c("state", "2011")
+
+#Importing the 2010 measles cases
+state_measles_2010 <- read_csv("data/statemeasles_2010.csv")
+
+state_measles_2010 <-state_measles_2010[-c(1:4,11,16,22,30,40,45,50,59,65:71),c(1,6)]
+
+colnames(state_measles_2010) <- c("state", "2010")
+
+#Importing the 2009 measles cases
+state_measles_2009 <- read_csv("data/statemeasles_2009.csv")
+
+state_measles_2009 <- state_measles_2009[-c(1:5,12,17,23,31,41,46,51,60,66:72),c(1,2)]
+
+colnames(state_measles_2009) <- c("state", "2009")
+
 #Merging the state measles case data
 state_measles <- state_measles %>% 
-  inner_join(state_measles_2017) %>% 
-  inner_join(state_measles_2016)
+  full_join(state_measles_2017) %>% 
+  full_join(state_measles_2016) %>% 
+  full_join(state_measles_2015) %>% 
+  full_join(state_measles_2014) %>% 
+  full_join(state_measles_2013) %>% 
+  full_join(state_measles_2012) %>% 
+  full_join(state_measles_2011) %>% 
+  full_join(state_measles_2010) %>% 
+  full_join(state_measles_2009)
 
 #Converting all the dashes to 0 for cases
 state_measles <- as.data.frame(lapply(state_measles, function(y) gsub("—", "0", y)))
 
+state_measles <- as.data.frame(lapply(state_measles, function(y) gsub("---", "0", y)))
+
 #Combining the new york state and city cases into one row
-new_york <- data.frame("New York", "187", "4", "1")
-names(new_york) <- c("state", "X2018", "X2017", "X2016")
+new_york <- data.frame("New York", "187", "4", "1", "7", "32", "65", "5", "32", "8", "18")
+names(new_york) <- c("state", "X2018", "X2017", "X2016","X2015","X2014","X2013","X2012",
+                     "X2011","X2010","X2009")
 
-state_measles <- rbind(state_measles, new_york)[-c(8,9),]
+state_measles <- rbind(state_measles, new_york)[-c(8,9,53,54),]
 
-colnames(state_measles) <- c("state", "2018", "2017", "2016")
+colnames(state_measles) <- c("state", "2018", "2017", "2016","2015","2014","2013","2012",
+                             "2011","2010","2009")
 
 #Pivot state_measles so each year/state is a row
 state_measles <- state_measles %>%
@@ -233,8 +293,53 @@ saveRDS(global_merged, file="data/global_merged.rds")
 ggplot(state_merged, aes(x=vax_rate))+
   geom_histogram()
 
+state_merged %>% 
+  drop_na(measles_cases) %>% 
+  ggplot(aes(x=year, y=measles_cases))+
+  geom_boxplot()
+
 ggplot(global_merged, aes(x=MCV2_rate)) +
   geom_histogram()
+
+ggplot(state_merged, aes(x=expenses_percapita))+
+  geom_histogram()
+
+ggplot(state_merged, aes(x=year, y=expenses_percapita, fill=year))+
+  geom_boxplot()
+
+state_merged %>%
+  drop_na(vax_rate) %>% 
+  ggplot(aes(x=year, y=vax_rate, fill=year))+
+  geom_boxplot()
+
+state_merged %>% top_n(n=-5, wt=vax_rate)
+
+state_merged %>% top_n(n=5, wt=measles_cases)
+
+ggplot(global_merged, aes(x=year, y=MCV2_rate, fill=year))+
+  geom_boxplot()
+
+ggplot(global_merged, aes(x=year, y=MCV1_rate, fill=year))+
+  geom_boxplot()
+
+ggplot(global_merged, aes(x=expenses_percapita, y=MCV1_rate))+
+  geom_point()+
+  scale_x_log10()
+
+ggplot(global_merged, aes(x=expenses_percapita, y=MCV2_rate)) +
+  geom_point()+ scale_x_log10()
+
+ggplot(global_merged, aes(x=MCV1_rate, y=case_total))+
+  geom_point() + scale_y_log10()
+
+ggplot(global_merged, aes(x=expenses_percapita, y=case_total)) +
+  geom_point()+ scale_x_log10() + scale_y_log10()
+
+ggplot(global_merged, aes(x=year, y=expenses_percapita, fill=year))+
+  geom_boxplot()
+
+ggplot(global_merged, aes(x=year, y=case_total, fill=year))+
+  geom_boxplot()
 
 summary(global_merged)
 
@@ -245,3 +350,28 @@ ggplot(state_merged, aes(x=year, y=measles_cases))+
 
 ggplot(global_merged, aes(x=year, y=case_total))+
   geom_boxplot()
+
+global_topfivecases <- global_merged %>% 
+  group_by(year) %>% 
+  top_n(n=5, wt=case_total)
+
+ggplot(global_topfivecases, aes(x=year, y=case_total))+
+  geom_point()
+
+global_bottomfiveMCV1 <- global_merged %>% 
+  group_by(year) %>% 
+  top_n(n=-5, wt=MCV1_rate)
+
+ggplot(global_bottomfiveMCV1, aes(x=year, y=MCV1_rate))+
+  geom_point()
+
+ggplot(global_bottomfiveMCV1, aes(x=reorder(country_name,country_name,
+                                             function(x)-length(x))))+
+  geom_bar()+
+  theme(axis.text.x=element_text(angle=90))
+
+ggplot(global_topfivecases, aes(x=reorder(country_name, country_name,
+                                          function(x)-length(x))))+
+  geom_bar()+
+  theme(axis.text.x=element_text(angle=90))
+  
