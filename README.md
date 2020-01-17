@@ -1,2 +1,11 @@
 # Measles: A Look at Vaccination Rates
-Looking at vaccination rates and case rates for viral illness
+
+## Inspiration and Background:
+In 2019, there was a large increase in measles cases, both globally and in the United States. According the the World Health Organization, in the first six months 2019 saw a nearly three-fold increase in measles cases compared to the same time in 2018. The first six months of 2019 also saw more measles cases than any full year since 2006. The United States also saw more cases in 2019 than any of the previous 25 years. The primary method of prevention is vaccination yet vaccination levels have not yet reached the WHO target level of 95%. In fact, in 2019 the WHO listed anti-vaccine sentiment as one of the top ten global health threats. This information, combined with a background in microbiology, led me to look at measles vaccination rates and how they may impact measles case counts on both a state level and global level.
+
+## Measles Virus:
+Measles is a viral disease that can be prevented by the effective use of vaccination. Two doses of measles vaccine is roughly 97% effective and only a single dose is still 93% effective at preventing measles. Prior to the introduction of the vaccine in 1963, there were estimated to be over 3 million cases of measles and over 400 deaths annually. With widespread vaccination and public health policies, measles was declared elimnated from the US population in 2000. Since then the virus has caused outbreaks within small populations.
+
+## Vaccination Rate, Case Count, and Health Expenditure Data:
+To understand the impacts of measles and the importance of vaccination, data about the vaccination rates, number of measles cases, and health care expenditures have been compiled. The data are shown at the national level, looking state by state, as well as the global level, looking at the data for each country individually. US vaccination rates are those reported for children entering kindergarten of the given year who have received the full two-dose vaccination. Global vaccine data is as reported by the World Health Organization and includes data for both the first and second doses of vaccine. All health expenditure data is presented as per capita expenses in current US dollars.
+Sources: Center for Disease Control and Prevention, World Health Organization, Organisation for Economic Co-operation and Development
