@@ -6,6 +6,9 @@ library(plotly)
 library(ggplot2)
 library(shinythemes)
 
+# Change the limit for scientific notation
+options(scipen=999)
+
 state_merged <- readRDS("data/state_merged.rds")
 
 state_year <- sort(unique(state_merged$year))

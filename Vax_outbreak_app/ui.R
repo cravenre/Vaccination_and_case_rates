@@ -10,8 +10,8 @@ shinyUI(
                                      column(3),
                                      column(9,
                                             h2("Measles: A Look at Vaccination Rates"),
-                                            h4("Measles is a viral disease that can be prevented by the effective use of
-                                                vaccination. Two doses of measles vaccine is roughly 97% effective and only
+                                            h4("Measles is a highly contagious viral disease that can be prevented by the effective use of
+                                                vaccination. Two doses of measles vaccine is roughly 97% effective while
                                                 a single dose is still 93% effective at preventing measles. Prior to the
                                                 introduction of the vaccine in 1963, there were estimated to be over 3 million
                                                 cases of measles and over 400 deaths annually. With widespread vaccination and
@@ -19,12 +19,12 @@ shinyUI(
                                                 in 2000. Since then the virus has caused outbreaks within small populations."),
                                             br(),
                                             h2("Vaccinations, Cases, and Expenditures"),
-                                            h4("To understand the impacts of measles and the importance of vaccination,
-                                               data about the vaccination rates, number of measles cases, and health care
+                                            h4("To understand the importance of measles vaccination on case counts,
+                                                the number of measles cases, vaccination rates, and health care
                                                expenditures have been compiled. The data are shown at the national level,
                                                looking state by state, as well as the global level, looking at the data for
                                                each country individually. US vaccination rates are those reported for children
-                                               entering kindergarten of the given year who have received the full two-dose
+                                               entering kindergarten of the listed year who have received the full two-dose
                                                vaccination. Global vaccine data is as reported by the World Health Organization
                                                and includes data for both the first and second doses of vaccine. All health 
                                                expenditure data is presented as per capita expenses in current US dollars."),
